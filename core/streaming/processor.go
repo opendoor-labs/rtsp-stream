@@ -89,11 +89,14 @@ func (p Processor) NewProcess(URI string) *exec.Cmd {
 		"-segment_list_flags",
 		"live",
 		"-hls_time",
-		"1",
+		"10", // 10 seconds
 		"-hls_list_size",
-		"3",
+		"8640", // last 24 hours
 		"-hls_segment_filename",
+		// TODO(zactac): Include timestamp in filename e.g. fmt.Sprintf("%s/%%Y%%m%%d-%%s.ts", newPath),
 		fmt.Sprintf("%s/%%d.ts", newPath),
+		// TODO(zactac): Attempt to connect to multiple streams,
+		// filename may need to be changed
 		fmt.Sprintf("%s/index.m3u8", newPath),
 	)
 	return cmd
