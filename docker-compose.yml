@@ -1,0 +1,18 @@
+version: '2.1'
+
+volumes:
+  rtsp-data:
+
+services:
+  rtsp:
+    build:
+      context: .
+      dockerfile: Dockerfile.template
+    volumes:
+      - 'rtsp-data:/data'
+    ports:
+      - '8080:8080'
+    environment:
+      - RTSP_STREAM_DEBUG=true
+      - RTSP_STREAM_LIST_ENDPOINT=true
+      - RTSP_STREAM_KEEP_FILES=true

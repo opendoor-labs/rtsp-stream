@@ -1,0 +1,27 @@
+## Build server
+FROM golang:1.11.5-stretch AS build-backend
+ADD ./main.go /go/src/github.com/Roverr/rtsp-stream/main.go
+ADD ./core /go/src/github.com/Roverr/rtsp-stream/core
+ADD ./Gopkg.lock /go/src/github.com/Roverr/rtsp-stream/Gopkg.lock
+ADD ./Gopkg.toml /go/src/github.com/Roverr/rtsp-stream/Gopkg.toml
+WORKDIR /go/src/github.com/Roverr/rtsp-stream
+# if stretch, need gcc for dep
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y build-essential curl tmux
+RUN go get -u github.com/golang/dep/cmd/dep
+RUN dep ensure -vendor-only
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=arm
+ENV GOARM=7
+RUN go build -ldflags="-s -w" -o bin/server
+RUN cp bin/server /tmp/server
+
+## Creating potential production image
+FROM woahbase/alpine-supervisor:armhf
+RUN apk update && apk add bash ca-certificates ffmpeg curl && rm -rf /var/cache/apk/*
+WORKDIR /app
+COPY --from=build-backend /tmp/server /app/
+ENTRYPOINT [ "/app/server" ]
