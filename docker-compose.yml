@@ -15,4 +15,4 @@ services:
     environment:
       - RTSP_STREAM_DEBUG=true
       - RTSP_STREAM_LIST_ENDPOINT=true
-      - RTSP_STREAM_KEEP_FILES=true
+      - RTSP_STREAM_KEEP_FILES=false
